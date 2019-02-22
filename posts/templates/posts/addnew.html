@@ -1,0 +1,24 @@
+{% extends 'posts/layout.html' %}
+
+{% block content %}
+<h3> Add Blog </h3>
+        <form class="col s12" method="POST" action="insert">
+                {% csrf_token %}
+          <div class="row">
+            <div class="input-field col s12">
+                <h5>Title</h5>
+              <input placeholder="Title" id="blogtitle" name="blogtitle" type="text" class="validate">
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+                <h5>Body</h5>
+                <textarea id="blogbody" name="blogbody" class="materialize-textarea" style="height:9rem"></textarea>
+              </div>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit" name="action">
+                Submit
+            </button>
+            <a href="/posts" class="btn">Go back</a>
+        </form>
+{% endblock %}

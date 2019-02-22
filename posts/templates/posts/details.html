@@ -1,0 +1,13 @@
+{% extends 'posts/layout.html' %}
+
+{% block content %}
+<h3 class="center-align red lighten-3"> {{post.title}} </h3>
+<div class="card">
+    <div class="card-content">
+        {{post.body}}
+    </div>
+</div>
+<a href="/posts" class="btn">Go back</a>
+<a class="waves-effect waves-light btn blue lighten-1" href="/posts/update/{{ post.id }}">Update</a>
+          <a class="waves-effect waves-light btn red lighten-1" href="/posts/delete/{{ post.id }}">Delete</a>
+{% endblock %}
