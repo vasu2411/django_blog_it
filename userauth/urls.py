@@ -7,5 +7,6 @@ urlpatterns = [
     path('login',views.login,name='login'),
     path('registernewuser',csrf_exempt(views.registernewuser),name='registernewuser'),
     path('userlogin',views.userlogin,name='userlogin'),
-    path('posts',views.home,name='userhome')
+    path('posts',views.home,name='userhome'),
+    path('logout',views.logout,name='logout'),
 ];

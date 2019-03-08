@@ -1,25 +1,19 @@
 {% extends 'posts/layout.html' %}
 
 {% block content %}
-<h3> Update Blog </h3>
-        <form class="col s12" method="POST" action="{{post.id}}">
-                {% csrf_token %}
+<h3> Update Blog </h3><br>
+        <form method="POST" action="{{post.id}}">
+            {% csrf_token %}
                 <input type="hidden" id="id" name="id" value="{{post.id}}">
-          <div class="row">
-            <div class="input-field col s12">
-                <h5>Title</h5>
-              <input placeholder="Title" id="blogtitle" name="blogtitle" type="text" class="validate" value="{{post.title}}"></input>
-            </div>
+          <div class="form-group">
+            <label>Title</label>
+            <input placeholder="Title" id="blogtitle" name="blogtitle" type="text" class="form-control" value="{{post.title}}"></input>
           </div>
-          <div class="row">
-            <div class="input-field col s12">
-                <h5>Body</h5>
-                <textarea id="blogbody" name="blogbody" class="materialize-textarea" style="height:9rem">{{post.body}}</textarea>
-              </div>
-            </div>
-            <button class="btn waves-effect waves-light" type="submit" name="action">
-                Update
-            </button>
-            <a href="/posts" class="btn">Go back</a>
+          <div class="form-group">
+            <label>Body</label>
+            <textarea id="blogbody" name="blogbody" class="form-control" style="height:9rem">{{post.body}}</textarea>
+          </div>
+          <button type="submit" name="action" class="btn btn-primary" style="background:#26a69a;border-color:#26a69a">Update</button>
+            <a href="/posts" class="btn btn-primary" style="background:#26a69a;border-color:#26a69a">Go back</a>
         </form>
 {% endblock %}

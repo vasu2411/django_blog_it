@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 urlpatterns = [
     path('', views.index, name='index'),
     path('index', views.index, name='index'),
+    path('details/postcomment', csrf_exempt(views.postcomment), name='postcomment'),
     path('details/<id>', views.detail, name='detail'),
     path('addnew',views.add,name='add'),
     path('insert',csrf_exempt(views.insert),name='insert'),

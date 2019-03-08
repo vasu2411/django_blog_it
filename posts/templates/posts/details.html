@@ -1,13 +1,49 @@
 {% extends 'posts/layout.html' %}
 
 {% block content %}
-<h3 class="center-align red lighten-3"> {{post.title}} </h3>
+<br>
+<h1 class="text-center" style="background-color:#EF9A9A"> {{post.title}} </h1><br>
 <div class="card">
-    <div class="card-content">
+    <div class="card-body">
         {{post.body}}
     </div>
 </div>
-<a href="/posts" class="btn">Go back</a>
-<a class="waves-effect waves-light btn blue lighten-1" href="/posts/update/{{ post.id }}">Update</a>
-          <a class="waves-effect waves-light btn red lighten-1" href="/posts/delete/{{ post.id }}">Delete</a>
+<br>
+<a href="/posts" class="btn btn-primary" style="background:#26a69a;border-color:#26a69a">Go back</a>
+{% if post.user.email_id == username %}
+<a class="btn btn-primary" href="/posts/update/{{ post.id }}">Update</a>
+<a class="btn btn-danger" href="/posts/delete/{{ post.id }}">Delete</a>
+{% endif %}
+<br><br>
+<h4>Comments</h4>
+{% for c in comment %}
+<div class="card">
+
+  <div class="card-body">
+      <h5 class="card-title">
+    {{c.comment}}
+  </h5>
+      <p class="card-text">
+          <b>by:</b> {{c.user.email_id}}<br>
+          <b>on:</b> {{c.posted_on}}
+      </p>
+  </div>
+</div>
+{% endfor %}
+<ul class="list-group">
+    {% for c in comment %}
+        <li class="list-group-item">{{c.comment}} by {{c.user.email_id}} on {{c.posted_on}}</li>
+    {% endfor %}
+</ul>
+
+<br>
+<form method="POST" action="postcomment">
+    {% csrf_token %}
+    <input type="hidden" id="id" name="id" value="{{post.id}}">
+  <div class="form-group">
+    <textarea id="comment" name="comment" class="form-control" style="height:5rem" placeholder="write a comment.."></textarea>
+  </div>
+  <button type="submit" name="action" class="btn btn-primary" style="background:#26a69a;border-color:#26a69a">Post</button>
+</form>
+
 {% endblock %}

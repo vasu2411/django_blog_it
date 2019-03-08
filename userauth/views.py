@@ -9,7 +9,10 @@ def register(request):
     return render(request,"userauth/register.html")
 
 def login(request):
-    return render(request,"userauth/login.html")
+    if request.session.has_key('username'):
+        return redirect('/index')
+    else:
+        return render(request,"userauth/login.html")
 
 def endecryptPassword(password,mode):
     translated=""
@@ -58,6 +61,7 @@ def registernewuser(request):
                 user = Users.objects.create(first_name=firstname, last_name=lastname, email_id=emailid, password=encrypted_password)
                 user.save()
                 messages.success(request, 'Registered successfully')
+                request.session['username'] = emailid
                 return redirect('/index')
         else:
             messages.error(request, 'Password and Confirm-password must be equal')
@@ -75,7 +79,12 @@ def userlogin(request):
             if user.email_id==emailid:
                 decrypted_password=endecryptPassword(user.password,"decrypt")
                 if password==decrypted_password:
+                    request.session['username']=emailid
                     return redirect('./posts')
 
 def home(request):
     return redirect('/posts/index')
+
+def logout(request):
+    del request.session['username']
+    return redirect('./login')
