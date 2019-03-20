@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.http import HttpResponse
+from django.contrib import messages
 
 # Create your views here.
 from .models import Users
@@ -45,30 +46,36 @@ def registernewuser(request):
         password = data.get('password')
         confirmpassword = data.get('confirmpassword')
 
-        count=0
+        if firstname.replace(" ","").isalpha() and lastname.replace(" ","").isalpha():
 
-        if password == confirmpassword:
-            users = Users.objects.all()
+            count=0
 
-            for user in users:
-                if user.email_id==emailid:
-                    count=1
-                    messages.error(request, 'It seems you already registered on the system.')
-                    return redirect('/register')
+            if password == confirmpassword:
+                users = Users.objects.all()
 
-            if count==0:
-                encrypted_password = endecryptPassword(password,"encrypt")
-                user = Users.objects.create(first_name=firstname, last_name=lastname, email_id=emailid, password=encrypted_password)
-                user.save()
-                messages.success(request, 'Registered successfully')
-                request.session['username'] = emailid
-                return redirect('/index')
+                for user in users:
+                    if user.email_id==emailid:
+                        count=1
+                        messages.error(request, 'It seems you already registered on the system.')
+                        return redirect('./register')
+
+                if count==0:
+                    encrypted_password = endecryptPassword(password,"encrypt")
+                    user = Users.objects.create(first_name=firstname, last_name=lastname, email_id=emailid, password=encrypted_password)
+                    user.save()
+                    messages.success(request, 'Registered successfully')
+                    request.session['username'] = emailid
+                    return redirect('/index')
+            else:
+                messages.error(request, 'Password and Confirm-password must be same')
+                return redirect('./register')
+
         else:
-            messages.error(request, 'Password and Confirm-password must be equal')
-            return redirect('/register')
+            messages.error(request, 'First name and Last name must be not empty')
+            return redirect('./register')
 
 def userlogin(request):
-
+    flag=0
     if request.POST:
         data = request.POST.copy()
         emailid = data.get('emailid')
@@ -80,7 +87,12 @@ def userlogin(request):
                 decrypted_password=endecryptPassword(user.password,"decrypt")
                 if password==decrypted_password:
                     request.session['username']=emailid
+                    flag=1
                     return redirect('./posts')
+
+    if flag==0:
+        messages.error(request, 'Email-id or password seems wrong')
+        return redirect('./login')
 
 def home(request):
     return redirect('/posts/index')

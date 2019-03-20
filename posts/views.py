@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib import messages
-from datetime import datetime
+from datetime import datetime,timedelta
 from userauth.models import Users
 
 from .models import Posts,Comments
@@ -9,7 +9,6 @@ from .models import Posts,Comments
 # Create your views here.
 def index(request):
     #return HttpResponse('HELLO FROM HOST')
-
     if request.session.has_key('username'):
         username = request.session['username']
         posts = Posts.objects.all()
@@ -51,16 +50,25 @@ def insert(request):
         data = request.POST.copy()
         title = data.get('blogtitle')
         body = data.get('blogbody')
-        if request.session.has_key('username'):
-            username = request.session['username']
-            user = Users.objects.all()
-            for u in user:
-                if u.email_id==username:
-                    userid=u.id
-        post=Posts.objects.create(title=title ,body=body, posted_on=datetime.now(),user_id=userid)
-        post.save()
-        messages.success(request, 'New blog inserted successfully')
-        return redirect('/index')
+        st=datetime.now()+timedelta(hours=-4)
+        #dt = datetime.now().astimezone(pytz.timezone("America/Toronto"))
+
+        if title.replace(" ","").isalpha() and body.replace(" ","").isalpha():
+
+            if request.session.has_key('username'):
+                username = request.session['username']
+                user = Users.objects.all()
+                for u in user:
+                    if u.email_id==username:
+                        userid=u.id
+            post=Posts.objects.create(title=title ,body=body, posted_on=st,user_id=userid)
+            post.save()
+            messages.success(request, 'New blog inserted successfully')
+            return redirect('/index')
+
+        else:
+            messages.error(request, 'Title or body must be not empty')
+            return redirect('./addnew')
 
 def delete(request,id):
     Posts.objects.filter(id=id).delete()
@@ -71,14 +79,20 @@ def update(request,id):
     if request.POST:
         post = Posts.objects.get(id=id)
         data = request.POST.copy()
-        post.title = data.get('blogtitle')
-        post.body = data.get('blogbody')
-        post.save()
-        messages.success(request, 'New blog updated successfully')
-        return redirect('/index')
+
+        if data.get('blogtitle').replace(" ","").isalpha() and data.get('blogbody').replace(" ","").isalpha():
+
+            post.title = data.get('blogtitle')
+            post.body = data.get('blogbody')
+            post.save()
+            messages.success(request, 'Requested blog updated successfully')
+            return redirect('/index')
+
+        else:
+            messages.error(request, 'Title or body must be not empty')
+            return redirect('./'+id)
 
     else:
-
         post= Posts.objects.get(id=id)
 
         context = {
@@ -92,15 +106,22 @@ def notfound(request):
 def postcomment(request):
     data = request.POST.copy()
     comment = data.get('comment')
-    poston = datetime.now()
-    postid = data.get('id')
-    if request.session.has_key('username'):
-        username = request.session['username']
-        user = Users.objects.all()
-        for u in user:
-            if u.email_id == username:
-                userid = u.id
-    comment = Comments.objects.create(comment=comment, posted_on=poston, user_id=userid, post_id=postid)
-    comment.save()
 
-    return redirect('./'+postid)
+    if comment.replace(" ","").isalpha():
+
+        st=datetime.now()+timedelta(hours=-4)
+        postid = data.get('id')
+        if request.session.has_key('username'):
+            username = request.session['username']
+            user = Users.objects.all()
+            for u in user:
+                if u.email_id == username:
+                    userid = u.id
+        comment = Comments.objects.create(comment=comment, posted_on=st, user_id=userid, post_id=postid)
+        comment.save()
+
+        return redirect('./'+postid)
+
+    else:
+        messages.error(request, 'comment must be not empty')
+        return redirect('./' + data.get('id'))
